@@ -33,7 +33,6 @@
         tg.expand();
         tg.MainButton.hide();
 
-        let uid = tg.initDataUnsafe?.user?.id || null;
         let code = "";
 
         function gen() {
@@ -67,6 +66,11 @@
             const inp = document.getElementById("input").value.trim().toUpperCase();
             const st = document.getElementById("status");
 
+            if (!inp) {
+                st.innerHTML = "⚠️ Vui lòng nhập mã CAPTCHA!";
+                return;
+            }
+
             if (inp !== code) {
                 st.innerHTML = "❌ SAI! Thử lại.";
                 document.getElementById("input").value = "";
@@ -74,14 +78,10 @@
                 return;
             }
 
-            if (!uid) {
-                st.innerHTML = "❌ Vui lòng mở trong Telegram!";
-                return;
-            }
-
             st.innerHTML = "✅ Đúng! Đang gửi xác minh...";
 
-            tg.sendData(JSON.stringify({ action: "ip_verify", user_id: uid }));
+            // Không cần truyền user_id, bot tự lấy từ người gửi
+            tg.sendData(JSON.stringify({ action: "ip_verify" }));
 
             st.innerHTML = "✅ Xác minh thành công! Đang đóng...";
             setTimeout(() => tg.close(), 1000);
@@ -91,12 +91,7 @@
             if (e.key === "Enter") verify();
         });
 
-        window.onload = () => {
-            gen();
-            if (!uid) {
-                document.getElementById("status").innerHTML = "⚠️ Vui lòng mở trong Telegram!";
-            }
-        };
+        window.onload = () => { gen(); };
     </script>
 </body>
 </html>
