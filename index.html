@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xác Minh CAPTCHA & IP</title>
+    <title>Xác Minh CAPTCHA</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: Arial; text-align: center; background: #111; color: white; padding: 20px; margin: 0; }
@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <h2>🔒 XÁC MINH CAPTCHA & IP</h2>
+    <h2>🔒 XÁC MINH CAPTCHA</h2>
     <p>Nhập đúng mã để tiếp tục</p>
 
     <canvas id="captcha" width="260" height="80"></canvas><br>
@@ -72,16 +72,12 @@
                 return;
             }
 
-            st.innerHTML = "✅ Đúng! Đang lấy IP...";
+            st.innerHTML = "✅ Đúng! Đang xác minh...";
 
-            fetch("https://api.ipify.org?format=json")
-                .then(r => r.json())
-                .then(d => {
-                    tg.sendData(JSON.stringify({action: "ip_verify", user_id: uid, ip: d.ip}));
-                    st.innerHTML = "✅ Xác minh thành công! Đóng cửa sổ...";
-                    setTimeout(() => tg.close(), 1000);
-                })
-                .catch(() => st.innerHTML = "❌ Lỗi lấy IP!");
+            // Gửi dữ liệu về bot (không cần IP nữa)
+            tg.sendData(JSON.stringify({action: "ip_verify", user_id: uid}));
+            st.innerHTML = "✅ Xác minh thành công! Đóng cửa sổ...";
+            setTimeout(() => tg.close(), 1000);
         }
 
         window.onload = () => {
