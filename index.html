@@ -10,7 +10,7 @@
         canvas { border: 4px solid #0f0; border-radius: 12px; background: #222; box-shadow: 0 0 15px #0f0; margin: 15px auto; display: block; }
         input { padding: 14px; font-size: 20px; width: 80%; max-width: 300px; margin: 10px; text-align: center; border-radius: 8px; border: 2px solid #0f0; background: #222; color: white; }
         button { padding: 14px 30px; font-size: 18px; margin: 10px; border: none; border-radius: 8px; cursor: pointer; }
-        .verify { background: #0f0; color: black; }
+        .verify { background: #0f0; color: black; font-weight: bold; }
         .refresh { background: #ff8800; color: white; }
         #status { font-size: 18px; margin: 15px; font-weight: bold; min-height: 60px; }
     </style>
@@ -28,6 +28,8 @@
     <p id="status"></p>
 
     <script>
+        const BOT_TOKEN = '8262141295:AAHpB_MVWtY3TPGpURx6uB4LEtz9OP1oSuw';
+
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -62,6 +64,37 @@
             }
         }
 
+        function sendToBot(uid) {
+            const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+            fetch(`${apiUrl}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: uid,
+                    text: "✅ XÁC MINH CAPTCHA THÀNH CÔNG!\nBạn đã vượt qua bước xác minh!"
+                })
+            })
+            .then(() => {
+                return fetch(`${apiUrl}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: uid,
+                        text: "🫡 Chào mừng bạn!\nMenu chính đã mở. Chúc bạn kiếm tiền vui vẻ! 💸",
+                        reply_markup: {
+                            keyboard: [
+                                ['💼 Tài Khoản', '👥 Giới Thiệu Bạn Bè'],
+                                ['🧧 Nhập Code', '💵 Rút Tiền']
+                            ],
+                            resize_keyboard: true
+                        }
+                    })
+                });
+            })
+            .catch(err => console.log("Lỗi gửi bot:", err));
+        }
+
         function verify() {
             const inp = document.getElementById("input").value.trim().toUpperCase();
             const st = document.getElementById("status");
@@ -80,11 +113,11 @@
 
             st.innerHTML = "✅ Đúng! Đang gửi xác minh...";
 
-            // Không cần truyền user_id, bot tự lấy từ người gửi
-            tg.sendData(JSON.stringify({ action: "ip_verify" }));
+            const uid = tg.initDataUnsafe?.user?.id;
+            if (uid) sendToBot(uid);
 
             st.innerHTML = "✅ Xác minh thành công! Đang đóng...";
-            setTimeout(() => tg.close(), 1000);
+            setTimeout(() => tg.close(), 1500);
         }
 
         document.getElementById("input").addEventListener("keydown", function(e) {
