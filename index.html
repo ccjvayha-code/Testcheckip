@@ -43,7 +43,6 @@
             ctx.shadowBlur = 10; ctx.shadowColor = "#00ff00";
             ctx.textAlign = "center"; ctx.textBaseline = "middle";
             ctx.fillText(captchaCode, 125, 42);
-            // nhiễu
             ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
             for (let i = 0; i < 12; i++) {
                 ctx.beginPath();
@@ -70,15 +69,15 @@
                 .then(r => r.json())
                 .then(data => {
                     tg.sendData(JSON.stringify({action: "ip_verify", user_id: user_id, ip: data.ip}));
-                    status.innerHTML = "✅ Thành công! Đang đóng...";
+                    status.innerHTML = "✅ Xác minh thành công! Đang đóng...";
                     setTimeout(() => tg.close(), 800);
                 })
-                .catch(() => status.innerHTML = "❌ Lỗi lấy IP, thử lại!");
+                .catch(() => status.innerHTML = "❌ Lỗi lấy IP!");
         }
 
         window.onload = () => {
             generateCaptcha();
-            if (!user_id) document.getElementById("status").innerHTML = "⚠️ Mở link này TRONG Telegram!";
+            if (!user_id) document.getElementById("status").innerHTML = "⚠️ Mở link TRONG Telegram!";
         };
     </script>
 </body>
