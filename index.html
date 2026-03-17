@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xác Minh</title>
+<title>CAPTCHA</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 body { background:#111; color:white; text-align:center; font-family:Arial }
 canvas { border:3px solid #0f0; margin-top:20px }
 input { padding:10px; font-size:18px; margin:10px }
-button { padding:10px 20px; font-size:16px; margin:5px }
+button { padding:10px 20px; font-size:16px }
 </style>
 </head>
 
@@ -19,18 +19,20 @@ button { padding:10px 20px; font-size:16px; margin:5px }
 <h2>🔒 CAPTCHA</h2>
 
 <canvas id="captcha" width="250" height="80"></canvas><br>
-<input id="input" placeholder="Nhập captcha">
-<br>
+<input id="input" placeholder="Nhập captcha"><br>
 <button onclick="verify()">Xác Thực</button>
 
 <p id="status"></p>
 
 <script>
 const tg = window.Telegram.WebApp;
+tg.ready();
 tg.expand();
 
 let captcha = "";
 let user_id = tg.initDataUnsafe?.user?.id;
+
+console.log("INIT:", tg.initDataUnsafe);
 
 function gen() {
     const c = document.getElementById("captcha");
@@ -50,13 +52,13 @@ function verify() {
     let input = document.getElementById("input").value.toUpperCase();
 
     if(input !== captcha){
-        document.getElementById("status").innerHTML = "❌ Sai captcha";
+        alert("Sai captcha");
         gen();
         return;
     }
 
     if(!user_id){
-        alert("MỞ TRONG TELEGRAM!");
+        alert("❌ MỞ TRONG TELEGRAM");
         return;
     }
 
@@ -65,21 +67,19 @@ function verify() {
     fetch("https://api.ipify.org?format=json")
     .then(res=>res.json())
     .then(data=>{
+
         let payload = {
             action: "ip_verify",
-            user_id: user_id,
             ip: data.ip
         };
 
-        console.log("GỬI:", payload);
+        console.log("SEND:", payload);
 
         tg.sendData(JSON.stringify(payload));
 
-        document.getElementById("status").innerHTML = "✅ Thành công!";
-
         setTimeout(()=>{
             tg.close();
-        }, 2000); // QUAN TRỌNG
+        }, 3000);
     });
 }
 
