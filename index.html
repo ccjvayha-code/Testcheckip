@@ -29,7 +29,9 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); tg.MainButton.hide();
+        tg.ready();
+        tg.expand();
+        tg.MainButton.hide();
 
         let uid = tg.initDataUnsafe?.user?.id || null;
         let code = "";
@@ -38,21 +40,25 @@
             const c = document.getElementById("captcha");
             const ctx = c.getContext("2d");
             ctx.clearRect(0, 0, 260, 80);
-            ctx.fillStyle = "#222"; ctx.fillRect(0, 0, 260, 80);
+            ctx.fillStyle = "#222";
+            ctx.fillRect(0, 0, 260, 80);
 
             code = Math.random().toString(36).substring(2, 9).toUpperCase();
 
             ctx.font = "bold 40px Arial";
             ctx.fillStyle = "#0f0";
-            ctx.shadowBlur = 10; ctx.shadowColor = "#0f0";
-            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#0f0";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
             ctx.fillText(code, 130, 45);
 
-            ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
             for (let i = 0; i < 10; i++) {
                 ctx.beginPath();
-                ctx.moveTo(Math.random()*260, Math.random()*80);
-                ctx.lineTo(Math.random()*260, Math.random()*80);
+                ctx.moveTo(Math.random() * 260, Math.random() * 80);
+                ctx.lineTo(Math.random() * 260, Math.random() * 80);
                 ctx.stroke();
             }
         }
@@ -63,26 +69,33 @@
 
             if (inp !== code) {
                 st.innerHTML = "❌ SAI! Thử lại.";
+                document.getElementById("input").value = "";
                 gen();
                 return;
             }
 
             if (!uid) {
-                st.innerHTML = "❌ Mở trong Telegram!";
+                st.innerHTML = "❌ Vui lòng mở trong Telegram!";
                 return;
             }
 
-            st.innerHTML = "✅ Đúng! Đang xác minh...";
+            st.innerHTML = "✅ Đúng! Đang gửi xác minh...";
 
-            // Gửi dữ liệu về bot (không cần IP nữa)
-            tg.sendData(JSON.stringify({action: "ip_verify", user_id: uid}));
-            st.innerHTML = "✅ Xác minh thành công! Đóng cửa sổ...";
+            tg.sendData(JSON.stringify({ action: "ip_verify", user_id: uid }));
+
+            st.innerHTML = "✅ Xác minh thành công! Đang đóng...";
             setTimeout(() => tg.close(), 1000);
         }
 
+        document.getElementById("input").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") verify();
+        });
+
         window.onload = () => {
             gen();
-            if (!uid) document.getElementById("status").innerHTML = "⚠️ Mở trong Telegram!";
+            if (!uid) {
+                document.getElementById("status").innerHTML = "⚠️ Vui lòng mở trong Telegram!";
+            }
         };
     </script>
 </body>
